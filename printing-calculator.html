@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Printing Calculator - CalcMaster Pro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1><a href="index.html">CalcMaster Pro</a></h1>
+        <p>Printing Calculator</p>
+    </header>
+    
+    <div class="calculator-container">
+        <div class="printing-calculator">
+            <div class="calc-display-container">
+                <input type="text" class="calc-display" id="display" disabled>
+                <div class="paper-tape" id="paper-tape"></div>
+            </div>
+            
+            <div class="calc-buttons">
+                <button class="calc-button" onclick="clearDisplay()">C</button>
+                <button class="calc-button" onclick="deleteLast()">⌫</button>
+                <button class="calc-button operator" onclick="appendToDisplay('%')">%</button>
+                <button class="calc-button operator" onclick="appendToDisplay('/')">/</button>
+                
+                <button class="calc-button" onclick="appendToDisplay('7')">7</button>
+                <button class="calc-button" onclick="appendToDisplay('8')">8</button>
+                <button class="calc-button" onclick="appendToDisplay('9')">9</button>
+                <button class="calc-button operator" onclick="appendToDisplay('*')">×</button>
+                
+                <button class="calc-button" onclick="appendToDisplay('4')">4</button>
+                <button class="calc-button" onclick="appendToDisplay('5')">5</button>
+                <button class="calc-button" onclick="appendToDisplay('6')">6</button>
+                <button class="calc-button operator" onclick="appendToDisplay('-')">-</button>
+                
+                <button class="calc-button" onclick="appendToDisplay('1')">1</button>
+                <button class="calc-button" onclick="appendToDisplay('2')">2</button>
+                <button class="calc-button" onclick="appendToDisplay('3')">3</button>
+                <button class="calc-button operator" onclick="appendToDisplay('+')">+</button>
+                
+                <button class="calc-button" onclick="appendToDisplay('0')">0</button>
+                <button class="calc-button" onclick="appendToDisplay('.')">.</button>
+                <button class="calc-button equals" onclick="calculate()">=</button>
+                
+                <button class="calc-button special" onclick="printTape()">Print</button>
+                <button class="calc-button special" onclick="clearTape()">Clear Tape</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 CalcMaster Pro. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        let calculationHistory = [];
+        
+        function appendToDisplay(value) {
+            const display = document.getElementById('display');
+            display.value += value;
+        }
+
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+
+        function deleteLast() {
+            const display = document.getElementById('display');
+            display.value = display.value.slice(0, -1);
+        }
+
+        function calculate() {
+            const display = document.getElementById('display');
+            try {
+                // Replace × with * for evaluation
+                let expression = display.value.replace(/×/g, '*');
+                const result = eval(expression);
+                
+                // Add to history
+                calculationHistory.push(`${display.value} = ${result}`);
+                updatePaperTape();
+                
+                display.value = result;
+            } catch (error) {
+                display.value = 'Error';
+            }
+        }
+        
+        function updatePaperTape() {
+            const paperTape = document.getElementById('paper-tape');
+            paperTape.innerHTML = '';
+            
+            calculationHistory.forEach(calculation => {
+                const div = document.createElement('div');
+                div.textContent = calculation;
+                paperTape.appendChild(div);
+            });
+            
+            // Scroll to bottom
+            paperTape.scrollTop = paperTape.scrollHeight;
+        }
+        
+        function printTape() {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print Calculation History</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h1 { color: #2575fc; }
+                        .calculation { margin: 10px 0; padding: 5px; border-bottom: 1px solid #eee; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Calculation History</h1>
+                    <div>${new Date().toLocaleString()}</div>
+                    <hr>
+                    <div id="calculations"></div>
+                </body>
+                </html>
+            `);
+            
+            const calculationsDiv = printWindow.document.getElementById('calculations');
+            calculationHistory.forEach(calculation => {
+                const div = printWindow.document.createElement('div');
+                div.className = 'calculation';
+                div.textContent = calculation;
+                calculationsDiv.appendChild(div);
+            });
+            
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+        
+        function clearTape() {
+            calculationHistory = [];
+            updatePaperTape();
+        }
+    </script>
+</body>
+</html>

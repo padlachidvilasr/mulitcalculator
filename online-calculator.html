@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Calculators - CalcMaster Pro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1><a href="index.html">CalcMaster Pro</a></h1>
+        <p>Online Calculators</p>
+    </header>
+    
+    <div class="calculator-container">
+        <div class="online-calculators">
+            <div class="calculator-grid">
+                <div class="calculator-card" onclick="showCalculator('bmi')">
+                    <h3>BMI Calculator</h3>
+                    <p>Calculate your Body Mass Index</p>
+                </div>
+                
+                <div class="calculator-card" onclick="showCalculator('calorie')">
+                    <h3>Calorie Calculator</h3>
+                    <p>Calculate your daily calorie needs</p>
+                </div>
+                
+                <div class="calculator-card" onclick="showCalculator('tip')">
+                    <h3>Tip Calculator</h3>
+                    <p>Calculate tip amount</p>
+                </div>
+                
+                <div class="calculator-card" onclick="showCalculator('age')">
+                    <h3>Age Calculator</h3>
+                    <p>Calculate your exact age</p>
+                </div>
+                
+                <div class="calculator-card" onclick="showCalculator('unit')">
+                    <h3>Unit Converter</h3>
+                    <p>Convert between different units</p>
+                </div>
+                
+                <div class="calculator-card" onclick="showCalculator('date')">
+                    <h3>Date Calculator</h3>
+                    <p>Add or subtract days from a date</p>
+                </div>
+            </div>
+            
+            <div id="calculator-content">
+                <div class="placeholder">
+                    <p>Select a calculator from the options above</p>
+                </div>
+                
+                <div id="bmi-calculator" class="calculator-content hidden">
+                    <h3>BMI Calculator</h3>
+                    <div class="input-group">
+                        <label>Weight (kg):</label>
+                        <input type="number" id="bmi-weight" placeholder="e.g., 70">
+                    </div>
+                    <div class="input-group">
+                        <label>Height (cm):</label>
+                        <input type="number" id="bmi-height" placeholder="e.g., 175">
+                    </div>
+                    <button onclick="calculateBMI()">Calculate BMI</button>
+                    <div class="result" id="bmi-result"></div>
+                </div>
+                
+                <div id="calorie-calculator" class="calculator-content hidden">
+                    <h3>Calorie Calculator</h3>
+                    <div class="input-group">
+                        <label>Age:</label>
+                        <input type="number" id="calorie-age" placeholder="e.g., 30">
+                    </div>
+                    <div class="input-group">
+                        <label>Gender:</label>
+                        <select id="calorie-gender">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Weight (kg):</label>
+                        <input type="number" id="calorie-weight" placeholder="e.g., 70">
+                    </div>
+                    <div class="input-group">
+                        <label>Height (cm):</label>
+                        <input type="number" id="calorie-height" placeholder="e.g., 175">
+                    </div>
+                    <div class="input-group">
+                        <label>Activity Level:</label>
+                        <select id="calorie-activity">
+                            <option value="1.2">Sedentary (little or no exercise)</option>
+                            <option value="1.375">Lightly active (light exercise 1-3 days/week)</option>
+                            <option value="1.55">Moderately active (moderate exercise 3-5 days/week)</option>
+                            <option value="1.725">Very active (hard exercise 6-7 days/week)</option>
+                            <option value="1.9">Extra active (very hard exercise and physical job)</option>
+                        </select>
+                    </div>
+                    <button onclick="calculateCalories()">Calculate Calories</button>
+                    <div class="result" id="calorie-result"></div>
+                </div>
+                
+                <div id="tip-calculator" class="calculator-content hidden">
+                    <h3>Tip Calculator</h3>
+                    <div class="input-group">
+                        <label>Bill Amount:</label>
+                        <input type="number" id="tip-amount" placeholder="e.g., 50.00">
+                    </div>
+                    <div class="input-group">
+                        <label>Tip Percentage:</label>
+                        <input type="number" id="tip-percentage" value="15" placeholder="e.g., 15">
+                    </div>
+                    <div class="input-group">
+                        <label>Number of People:</label>
+                        <input type="number" id="tip-people" value="1" placeholder="e.g., 2">
+                    </div>
+                    <button onclick="calculateTip()">Calculate Tip</button>
+                    <div class="result" id="tip-result"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 CalcMaster Pro. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        function showCalculator(calcType) {
+            // Hide all calculator contents
+            document.querySelectorAll('.calculator-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Hide placeholder
+            document.querySelector('.placeholder').classList.add('hidden');
+            
+            // Show selected calculator
+            document.getElementById(`${calcType}-calculator`).classList.remove('hidden');
+        }
+        
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById('bmi-weight').value);
+            const height = parseFloat(document.getElementById('bmi-height').value) / 100; // Convert to meters
+            
+            if (isNaN(weight) || isNaN(height)) {
+                document.getElementById('bmi-result').innerHTML = '<p class="error">Please enter valid numbers</p>';
+                return;
+            }
+            
+            const bmi = weight / (height * height);
+            let category = '';
+            
+            if (bmi < 18.5) category = 'Underweight';
+            else if (bmi < 25) category = 'Normal weight';
+            else if (bmi < 30) category = 'Overweight';
+            else category = 'Obesity';
+            
+            document.getElementById('bmi-result').innerHTML = `
+                <p>Your BMI: <strong>${bmi.toFixed(1)}</strong></p>
+                <p>Category: <strong>${category}</strong></p>
+            `;
+        }
+        
+        function calculateCalories() {
+            const age = parseFloat(document.getElementById('calorie-age').value);
+            const gender = document.getElementById('calorie-gender').value;
+            const weight = parseFloat(document.getElementById('calorie-weight').value);
+            const height = parseFloat(document.getElementById('calorie-height').value);
+            const activity = parseFloat(document.getElementById('calorie-activity').value);
+            
+            if (isNaN(age) || isNaN(weight) || isNaN(height)) {
+                document.getElementById('calorie-result').innerHTML = '<p class="error">Please enter valid numbers</p>';
+                return;
+            }
+            
+            // Calculate BMR (Basal Metabolic Rate)
+            let bmr;
+            if (gender === 'male') {
+                bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+            } else {
+                bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+            }
+            
+            // Calculate TDEE (Total Daily Energy Expenditure)
+            const tdee = bmr * activity;
+            
+            document.getElementById('calorie-result').innerHTML = `
+                <p>Maintenance Calories: <strong>${tdee.toFixed(0)} calories/day</strong></p>
+                <p>Mild weight loss (0.25 kg/week): <strong>${(tdee - 250).toFixed(0)} calories/day</strong></p>
+                <p>Weight loss (0.5 kg/week): <strong>${(tdee - 500).toFixed(0)} calories/day</strong></p>
+                <p>Extreme weight loss (1 kg/week): <strong>${(tdee - 1000).toFixed(0)} calories/day</strong></p>
+            `;
+        }
+        
+        function calculateTip() {
+            const amount = parseFloat(document.getElementById('tip-amount').value);
+            const percentage = parseFloat(document.getElementById('tip-percentage').value);
+            const people = parseFloat(document.getElementById('tip-people').value);
+            
+            if (isNaN(amount) || isNaN(percentage) || isNaN(people)) {
+                document.getElementById('tip-result').innerHTML = '<p class="error">Please enter valid numbers</p>';
+                return;
+            }
+            
+            const tipAmount = amount * (percentage / 100);
+            const totalAmount = amount + tipAmount;
+            const amountPerPerson = totalAmount / people;
+            
+            document.getElementById('tip-result').innerHTML = `
+                <p>Tip Amount: <strong>$${tipAmount.toFixed(2)}</strong></p>
+                <p>Total Amount: <strong>$${totalAmount.toFixed(2)}</strong></p>
+                <p>Amount per Person: <strong>$${amountPerPerson.toFixed(2)}</strong></p>
+            `;
+        }
+    </script>
+</body>
+</html>

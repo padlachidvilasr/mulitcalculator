@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Calculator - CalcMaster Pro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1><a href="index.html">CalcMaster Pro</a></h1>
+        <p>Financial Calculator</p>
+    </header>
+    
+    <div class="calculator-container">
+        <div class="financial-calculator">
+            <div class="financial-tabs">
+                <button class="tab-button active" onclick="showTab('loan')">Loan Calculator</button>
+                <button class="tab-button" onclick="showTab('savings')">Savings Calculator</button>
+                <button class="tab-button" onclick="showTab('compound')">Compound Interest</button>
+            </div>
+            
+            <div id="loan-tab" class="tab-content active">
+                <h3>Loan Calculator</h3>
+                <div class="input-group">
+                    <label>Loan Amount:</label>
+                    <input type="number" id="loan-amount" placeholder="e.g., 10000">
+                </div>
+                <div class="input-group">
+                    <label>Interest Rate (% per year):</label>
+                    <input type="number" id="loan-interest" placeholder="e.g., 5.5">
+                </div>
+                <div class="input-group">
+                    <label>Loan Term (years):</label>
+                    <input type="number" id="loan-term" placeholder="e.g., 5">
+                </div>
+                <button onclick="calculateLoan()">Calculate</button>
+                <div class="result" id="loan-result"></div>
+            </div>
+            
+            <div id="savings-tab" class="tab-content">
+                <h3>Savings Calculator</h3>
+                <div class="input-group">
+                    <label>Initial Investment:</label>
+                    <input type="number" id="savings-initial" placeholder="e.g., 5000">
+                </div>
+                <div class="input-group">
+                    <label>Monthly Contribution:</label>
+                    <input type="number" id="savings-monthly" placeholder="e.g., 200">
+                </div>
+                <div class="input-group">
+                    <label>Interest Rate (% per year):</label>
+                    <input type="number" id="savings-interest" placeholder="e.g., 7">
+                </div>
+                <div class="input-group">
+                    <label>Time (years):</label>
+                    <input type="number" id="savings-time" placeholder="e.g., 10">
+                </div>
+                <button onclick="calculateSavings()">Calculate</button>
+                <div class="result" id="savings-result"></div>
+            </div>
+            
+            <div id="compound-tab" class="tab-content">
+                <h3>Compound Interest Calculator</h3>
+                <div class="input-group">
+                    <label>Principal Amount:</label>
+                    <input type="number" id="compound-principal" placeholder="e.g., 10000">
+                </div>
+                <div class="input-group">
+                    <label>Interest Rate (% per year):</label>
+                    <input type="number" id="compound-interest" placeholder="e.g., 5">
+                </div>
+                <div class="input-group">
+                    <label>Time (years):</label>
+                    <input type="number" id="compound-time" placeholder="e.g., 10">
+                </div>
+                <div class="input-group">
+                    <label>Compounding Frequency:</label>
+                    <select id="compound-frequency">
+                        <option value="1">Annually</option>
+                        <option value="2">Semi-Annually</option>
+                        <option value="4">Quarterly</option>
+                        <option value="12">Monthly</option>
+                    </select>
+                </div>
+                <button onclick="calculateCompound()">Calculate</button>
+                <div class="result" id="compound-result"></div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 CalcMaster Pro. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Add active class to clicked button
+            event.currentTarget.classList.add('active');
+        }
+        
+        function calculateLoan() {
+            const amount = parseFloat(document.getElementById('loan-amount').value);
+            const interest = parseFloat(document.getElementById('loan-interest').value) / 100 / 12; // Monthly interest rate
+            const term = parseFloat(document.getElementById('loan-term').value) * 12; // Term in months
+            
+            if (isNaN(amount) || isNaN(interest) || isNaN(term)) {
+                document.getElementById('loan-result').innerHTML = '<p class="error">Please enter valid numbers</p>';
+                return;
+            }
+            
+            // Calculate monthly payment
+            const monthlyPayment = (amount * interest) / (1 - Math.pow(1 + interest, -term));
+            const totalPayment = monthlyPayment * term;
+            const totalInterest = totalPayment - amount;
+            
+            document.getElementById('loan-result').innerHTML = `
+                <p>Monthly Payment: <strong>$${monthlyPayment.toFixed(2)}</strong></p>
+                <p>Total of ${term} Payments: <strong>$${totalPayment.toFixed(2)}</strong></p>
+                <p>Total Interest: <strong>$${totalInterest.toFixed(2)}</strong></p>
+            `;
+        }
+        
+        function calculateSavings() {
+            const initial = parseFloat(document.getElementById('savings-initial').value) || 0;
+            const monthly = parseFloat(document.getElementById('savings-monthly').value) || 0;
+            const interest = parseFloat(document.getElementById('savings-interest').value) / 100 / 12; // Monthly interest rate
+            const time = parseFloat(document.getElementById('savings-time').value) * 12; // Time in months
+            
+            if (isNaN(initial) || isNaN(monthly) || isNaN(interest) || isNaN(time)) {
+                document.getElementById('savings-result').innerHTML = '<p class="error">Please enter valid numbers</p>';
+                return;
+            }
+            
+            // Calculate future value
+            let futureValue = initial * Math.pow(1 + interest, time);
+            if (monthly > 0) {
+                futureValue += monthly * ((Math.pow(1 + interest, time) - 1) / interest);
+            }
+            
+            const totalContributions = initial + (monthly * time);
+            const interestEarned = futureValue - totalContributions;
+            
+            document.getElementById('savings-result').innerHTML = `
+                <p>Future Value: <strong>$${futureValue.toFixed(2)}</strong></p>
+                <p>Total Contributions: <strong>$${totalContributions.toFixed(2)}</strong></p>
+                <p>Interest Earned: <strong>$${interestEarned.toFixed(2)}</strong></p>
+            `;
+        }
+        
+        function calculateCompound() {
+            const principal = parseFloat(document.getElementById('compound-principal').value);
+            const interest = parseFloat(document.getElementById('compound-interest').value) / 100;
+            const time = parseFloat(document.getElementById('compound-time').value);
+            const frequency = parseInt(document.getElementById('compound-frequency').value);
+            
+            if (isNaN(principal) || isNaN(interest) || isNaN(time)) {
+                document.getElementById('compound-result').innerHTML = '<p class="error">Please enter valid numbers</p>';
+                return;
+            }
+            
+            // Calculate compound interest
+            const amount = principal * Math.pow(1 + interest / frequency, frequency * time);
+            const interestEarned = amount - principal;
+            
+            document.getElementById('compound-result').innerHTML = `
+                <p>Future Value: <strong>$${amount.toFixed(2)}</strong></p>
+                <p>Interest Earned: <strong>$${interestEarned.toFixed(2)}</strong></p>
+            `;
+        }
+    </script>
+</body>
+</html>

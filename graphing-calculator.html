@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphing Calculator - CalcMaster Pro</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1><a href="index.html">CalcMaster Pro</a></h1>
+        <p>Graphing Calculator</p>
+    </header>
+    
+    <div class="calculator-container">
+        <div class="graphing-calculator">
+            <div class="graph-controls">
+                <input type="text" id="function-input" placeholder="Enter function (e.g., x^2)">
+                <button onclick="plotFunction()">Plot Graph</button>
+                <button onclick="clearGraph()">Clear</button>
+            </div>
+            <div class="graph-container">
+                <canvas id="graph-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 CalcMaster Pro. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        let chart = null;
+        
+        function plotFunction() {
+            const functionInput = document.getElementById('function-input').value;
+            if (!functionInput) return;
+            
+            // Generate data points
+            const data = [];
+            for (let x = -10; x <= 10; x += 0.1) {
+                try {
+                    // Replace ^ with ** for exponentiation
+                    const expression = functionInput.replace(/x/g, `(${x})`).replace(/\^/g, '**');
+                    const y = eval(expression);
+                    if (isFinite(y)) {
+                        data.push({x, y});
+                    }
+                } catch (e) {
+                    console.error('Error evaluating function:', e);
+                }
+            }
+            
+            // Destroy previous chart if exists
+            if (chart) {
+                chart.destroy();
+            }
+            
+            // Create new chart
+            const ctx = document.getElementById('graph-canvas').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: `f(x) = ${functionInput}`,
+                        data: data,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'center'
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'center'
+                        }
+                    }
+                }
+            });
+        }
+        
+        function clearGraph() {
+            if (chart) {
+                chart.destroy();
+                chart = null;
+            }
+            document.getElementById('function-input').value = '';
+        }
+    </script>
+</body>
+</html>

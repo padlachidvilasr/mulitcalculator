@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator - CalcMaster Pro</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1><a href="index.html">CalcMaster Pro</a></h1>
+        <p>Scientific Calculator</p>
+    </header>
+    
+    <div class="calculator-container">
+        <div class="calculator scientific">
+            <input type="text" class="calc-display" id="display" disabled>
+            <div class="calc-buttons">
+                <button class="calc-button" onclick="clearDisplay()">C</button>
+                <button class="calc-button" onclick="deleteLast()">⌫</button>
+                <button class="calc-button operator" onclick="appendToDisplay('π')">π</button>
+                <button class="calc-button operator" onclick="appendToDisplay('e')">e</button>
+                <button class="calc-button operator" onclick="appendToDisplay('^')">^</button>
+                
+                <button class="calc-button" onclick="appendToDisplay('(')">(</button>
+                <button class="calc-button" onclick="appendToDisplay(')')">)</button>
+                <button class="calc-button operator" onclick="appendToDisplay('!')">!</button>
+                <button class="calc-button operator" onclick="calculateFunction('sin')">sin</button>
+                <button class="calc-button operator" onclick="calculateFunction('cos')">cos</button>
+                
+                <button class="calc-button" onclick="appendToDisplay('7')">7</button>
+                <button class="calc-button" onclick="appendToDisplay('8')">8</button>
+                <button class="calc-button" onclick="appendToDisplay('9')">9</button>
+                <button class="calc-button operator" onclick="appendToDisplay('/')">/</button>
+                <button class="calc-button operator" onclick="calculateFunction('tan')">tan</button>
+                
+                <button class="calc-button" onclick="appendToDisplay('4')">4</button>
+                <button class="calc-button" onclick="appendToDisplay('5')">5</button>
+                <button class="calc-button" onclick="appendToDisplay('6')">6</button>
+                <button class="calc-button operator" onclick="appendToDisplay('*')">×</button>
+                <button class="calc-button operator" onclick="calculateFunction('log')">log</button>
+                
+                <button class="calc-button" onclick="appendToDisplay('1')">1</button>
+                <button class="calc-button" onclick="appendToDisplay('2')">2</button>
+                <button class="calc-button" onclick="appendToDisplay('3')">3</button>
+                <button class="calc-button operator" onclick="appendToDisplay('-')">-</button>
+                <button class="calc-button operator" onclick="calculateFunction('ln')">ln</button>
+                
+                <button class="calc-button" onclick="appendToDisplay('0')">0</button>
+                <button class="calc-button" onclick="appendToDisplay('.')">.</button>
+                <button class="calc-button equals" onclick="calculate()">=</button>
+                <button class="calc-button operator" onclick="appendToDisplay('+')">+</button>
+                <button class="calc-button operator" onclick="calculateFunction('sqrt')">√</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 CalcMaster Pro. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        function appendToDisplay(value) {
+            const display = document.getElementById('display');
+            display.value += value;
+        }
+
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+
+        function deleteLast() {
+            const display = document.getElementById('display');
+            display.value = display.value.slice(0, -1);
+        }
+        
+        function calculateFunction(func) {
+            const display = document.getElementById('display');
+            try {
+                let expression = display.value;
+                if (expression) {
+                    switch(func) {
+                        case 'sin':
+                            display.value = Math.sin(eval(expression));
+                            break;
+                        case 'cos':
+                            display.value = Math.cos(eval(expression));
+                            break;
+                        case 'tan':
+                            display.value = Math.tan(eval(expression));
+                            break;
+                        case 'log':
+                            display.value = Math.log10(eval(expression));
+                            break;
+                        case 'ln':
+                            display.value = Math.log(eval(expression));
+                            break;
+                        case 'sqrt':
+                            display.value = Math.sqrt(eval(expression));
+                            break;
+                    }
+                }
+            } catch (error) {
+                display.value = 'Error';
+            }
+        }
+
+        function calculate() {
+            const display = document.getElementById('display');
+            try {
+                // Replace special constants and operators
+                let expression = display.value
+                    .replace(/π/g, Math.PI)
+                    .replace(/e/g, Math.E)
+                    .replace(/×/g, '*')
+                    .replace(/!/g, '');
+                
+                // Handle factorial if present
+                if (display.value.includes('!')) {
+                    let num = parseFloat(expression);
+                    let result = 1;
+                    for (let i = 2; i <= num; i++) {
+                        result *= i;
+                    }
+                    display.value = result;
+                } else {
+                    display.value = math.evaluate(expression);
+                }
+            } catch (error) {
+                display.value = 'Error';
+            }
+        }
+    </script>
+</body>
+</html>
